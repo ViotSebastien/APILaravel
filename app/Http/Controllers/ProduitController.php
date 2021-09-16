@@ -6,25 +6,26 @@ use App\Http\Resources\ProduitRessource;
 use App\Models\Produit;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Vinkla\Hashids\Facades\Hashids;
+
 
 class ProduitController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return ProduitRessource
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index()
     {
-        $produit=Produit::paginate(5);
-        return new ProduitRessource($produit);
+        return ProduitRessource::collection(Produit::paginate(5));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return ProduitRessource
      */
     public function store(Request $request)
     {
@@ -33,28 +34,26 @@ class ProduitController extends Controller
             'price' => 'int|required'
         ]);
         $produit=Produit::create($request->all());
-        return response()->json(
-            [
-                'data' => $produit
-            ],201);
+        return new ProduitRessource($produit);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Produit  $produit
+     * @param Produit $produit
      * @return ProduitRessource
      */
     public function show(Produit $produit)
     {
+        $produit = Produit::findOrFail((new \Hashids\Hashids)->decode($produit->getAttribute("id")));
         return new ProduitRessource($produit);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Produit  $produit
+     * @param Request $request
+     * @param Produit $produit
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Produit $produit)
@@ -75,7 +74,7 @@ class ProduitController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Produit  $produit
+     * @param Produit $produit
      * @return \Illuminate\Http\Response
      */
     public function destroy(Produit $produit)
