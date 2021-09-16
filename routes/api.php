@@ -22,6 +22,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::group(['middleware' =>['auth:sanctum']], function() {
     Route::apiResource('produit', ProduitController::class);
+    Route::post('logout', [AuthController::class, 'logout']);
 });
-Route::post('inscription', [AuthController::class, 'InscrisUtilisateur']);
-Route::post('connexion', [AuthController::class, 'connexion']);
+Route::post('register', [AuthController::class, 'InscrisUtilisateur']);
+Route::post('login', [AuthController::class, 'connexion']);
+
