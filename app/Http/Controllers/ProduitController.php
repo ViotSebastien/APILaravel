@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ProduitRessource;
 use App\Models\Produit;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -29,8 +28,15 @@ class ProduitController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'string|required',
+            'price' => 'int|required'
+        ]);
         $produit=Produit::create($request->all());
-        return response()->json(['data' => $produit->id],201);
+        return response()->json(
+            [
+                'data' => $produit
+            ],201);
     }
 
     /**
@@ -53,8 +59,17 @@ class ProduitController extends Controller
      */
     public function update(Request $request, Produit $produit)
     {
+        $request->validate([
+            'name' => 'string|required',
+            'price' => 'int|required'
+        ]);
         $produit->update($request->all());
-        return response()->json(['data' => $produit],Response::HTTP_NO_CONTENT);
+        return response()->json(
+            [
+                'data' => [
+                    'id' => $produit->id
+                ]
+            ],Response::HTTP_NO_CONTENT);
     }
 
     /**
@@ -65,6 +80,7 @@ class ProduitController extends Controller
      */
     public function destroy(Produit $produit)
     {
+        $produit = Produit::findOrFail($produit->getAttribute("id"));
         $produit->delete();
         return response()->json(null,Response::HTTP_NO_CONTENT);
     }

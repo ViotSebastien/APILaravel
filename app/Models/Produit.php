@@ -33,5 +33,6 @@ class Produit extends Model
      * @var array
      */
     protected $casts = [
+        'price' => 'int',
     ];
 }
